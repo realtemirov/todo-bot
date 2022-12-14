@@ -5,15 +5,17 @@ import (
 )
 
 type Service struct {
-	strg        storage.StorageI
-	UserService *userService
-	TodoService *todoService
+	strg         storage.StorageI
+	UserService  *userService
+	TodoService  *todoService
+	NotifService *notifService
 }
 
 func NewService(strg storage.StorageI) *Service {
 	return &Service{
-		strg:        strg,
-		UserService: NewUserRepository(strg.User()),
-		TodoService: NewTodoRepository(strg.Todo()),
+		strg:         strg,
+		UserService:  NewUserRepository(strg.User()),
+		TodoService:  NewTodoRepository(strg.Todo()),
+		NotifService: NewNotifRepository(strg.Notification()),
 	}
 }

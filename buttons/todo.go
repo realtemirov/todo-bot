@@ -28,7 +28,7 @@ var New_todo = tg.NewInlineKeyboardMarkup(
 	),
 	tg.NewInlineKeyboardRow(
 		tg.NewInlineKeyboardButtonData(word.TODO_NEW_DEADLINE, query.TODO_NEW_DEADLINE),
-		tg.NewInlineKeyboardButtonData(word.TODO_NEW_NOTIFICATON, query.TODO_NEW_NOTIFICATON),
+		tg.NewInlineKeyboardButtonData(word.TODO_NEW_NOTIFICATON, query.TODO_NEW_NOTIFICATION),
 	),
 	tg.NewInlineKeyboardRow(
 		tg.NewInlineKeyboardButtonData(word.TODO_NEW_SAVE, query.TODO_NEW_SAVE),

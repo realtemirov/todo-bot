@@ -64,7 +64,7 @@ func (r *userRepo) Update(user *model.User) (*model.User, error) {
 
 func (r *userRepo) Get(id int64) (*model.User, error) {
 
-	var user *model.User
+	user := model.User{}
 	q := `SELECT id, username, first_name, last_name, is_admin, photo_url, created_at, updated_at FROM users WHERE id=$1`
 	row := r.db.QueryRow(q, id)
 	err := row.Scan(&user.ID, &user.Username, &user.FirsName, &user.LastName, &user.IsAdmin, &user.Photo_URL, &user.CreatedAt, &user.UpdatedAt)
@@ -78,7 +78,7 @@ func (r *userRepo) Get(id int64) (*model.User, error) {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (r *userRepo) GetAll() ([]*model.User, error) {

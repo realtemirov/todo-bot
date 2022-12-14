@@ -37,4 +37,6 @@ type TodoI interface {
 type NotificationI interface {
 	Send()
 	Check()
+	Create(notif *model.Notification) (string, error)
+	GetByUserId(id int64) ([]*model.Notification, error)
 }

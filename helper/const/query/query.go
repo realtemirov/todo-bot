@@ -18,14 +18,14 @@ const (
 	CHALLENGE_HISTORY    = "challenge-history"
 
 	// Todo New
-	TODO_NEW_NOTIFICATON = "todo-new-notificaton"
-	TODO_NEW_DEADLINE    = "todo-new-deadline"
-	TODO_NEW_TITLE       = "todo-new-title"
-	TODO_NEW_DESCRIPTION = "todo-new-description"
-	TODO_NEW_PICTURE     = "todo-new-picture"
-	TODO_NEW_FILE        = "todo-new-file"
-	TODO_NEW_SAVE        = "todo-new-save"
-	TODO_NEW_CANCEL      = "todo-new-cancel"
+	TODO_NEW_NOTIFICATION = "todo-new-notificaton"
+	TODO_NEW_DEADLINE     = "todo-new-deadline"
+	TODO_NEW_TITLE        = "todo-new-title"
+	TODO_NEW_DESCRIPTION  = "todo-new-description"
+	TODO_NEW_PICTURE      = "todo-new-picture"
+	TODO_NEW_FILE         = "todo-new-file"
+	TODO_NEW_SAVE         = "todo-new-save"
+	TODO_NEW_CANCEL       = "todo-new-cancel"
 
 	// Todo View
 	TODO_VIEW_DONE   = "todo-view-done"

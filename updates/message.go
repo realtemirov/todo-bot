@@ -85,4 +85,3 @@ func (h *Handler) Todo(m *tg.Message) {
 	msg.ReplyMarkup = buttons.Todo
 	h.bot.Send(msg)
 }
-
