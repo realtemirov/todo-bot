@@ -5,7 +5,6 @@ import "github.com/realtemirov/projects/tgbot/model"
 type StorageI interface {
 	User() UserI
 	Todo() TodoI
-	Notification() NotificationI
 }
 
 type UserI interface {
@@ -20,12 +19,4 @@ type TodoI interface {
 	Update(todo *model.Todo) (*model.Todo, error)
 	Done(id string) error
 	Delete(id string) error
-}
-
-type NotificationI interface {
-	Send()
-	Check()
-	Create(notif *model.Notification) (string, error)
-	GetByUserId(id int64) ([]*model.Notification, error)
-	GetAll() ([]*model.Notification, error)
 }

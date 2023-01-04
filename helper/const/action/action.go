@@ -39,15 +39,5 @@ const (
 	NOTIFICATION_ON  = "turn-on"
 	NOTIFICATION_OFF = "turn-off"
 	//TODO
-	/*TODO_CREATE_TITLE       = "todo-create-title"
-	TODO_CREATE_DESCRIPTION = "todo-create-description"
-	TODO_CREATE_DEADLINE    = "todo-create-deadline"
-
-	TODO_UPDATE_TITLE       = "todo-update-title"
-	TODO_UPDATE_DESCRIPTION = "todo-update-description"
-	TODO_UPDATE_DEADLINE    = "todo-update-deadline"
-
-	TODO_CHECK_NUMBER = "todo-check-number"
-	TODO_CHECK_TIME   = "todo-check-time"*/
-
+	
 )

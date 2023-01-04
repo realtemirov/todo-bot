@@ -12,9 +12,8 @@ import (
 type Storege struct {
 	db *sqlx.DB
 
-	userRepo         storage.UserI
-	todoRepo         storage.TodoI
-	notificationRepo storage.NotificationI
+	userRepo storage.UserI
+	todoRepo storage.TodoI
 }
 
 func NewPostgres(cnf config.Config) (storage.StorageI, error) {
@@ -29,10 +28,8 @@ func NewPostgres(cnf config.Config) (storage.StorageI, error) {
 
 	db, err := sqlx.Open("postgres", psqlConnection)
 	if err != nil {
-		return nil, err
-	}
-	if err != nil {
 		log.Fatalf("cannot connect to postgres: %v", err)
+		return nil, err
 	}
 
 	if err = db.Ping(); err != nil {
@@ -58,12 +55,4 @@ func (s *Storege) Todo() storage.TodoI {
 	}
 
 	return s.todoRepo
-}
-
-func (s *Storege) Notification() storage.NotificationI {
-	if s.notificationRepo == nil {
-		s.notificationRepo = NewNotificationRepo(s.db)
-	}
-
-	return s.notificationRepo
 }
