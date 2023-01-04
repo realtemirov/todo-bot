@@ -6,6 +6,7 @@ const (
 	MENU_CHALLANGES     = "💪🏼 Challenges"
 	MENU_SETTINGS       = "⚙ Settings"
 	MENU_RECOMMENDATION = "🌟 Recommendation"
+	MENU_PROFILE        = "👤 Profile"
 
 	// Todo
 	TODO_ADD     = "📝 Add Task"

@@ -2,51 +2,18 @@ package updates
 
 import (
 	"fmt"
+	"time"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/google/uuid"
+	"github.com/realtemirov/projects/tgbot/helper"
 	"github.com/realtemirov/projects/tgbot/helper/const/action"
 	"github.com/realtemirov/projects/tgbot/helper/const/query"
 	"github.com/realtemirov/projects/tgbot/helper/const/word"
+	"github.com/realtemirov/projects/tgbot/helper/convert"
+	"github.com/realtemirov/projects/tgbot/model"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/redis"
-)
-
-var (
-	actions = []string{
-		action.TODO_ADD,
-		action.TODO_HISTORY,
-		action.TODO_TODOS,
-		action.TODO_NEW_SAVE,
-		action.TODO_NEW_CANCEL,
-		action.EMPTY,
-	}
-
-	clocks = []string{
-		query.CLOCK_1,
-		query.CLOCK_2,
-		query.CLOCK_3,
-		query.CLOCK_4,
-		query.CLOCK_5,
-		query.CLOCK_6,
-		query.CLOCK_7,
-		query.CLOCK_8,
-		query.CLOCK_9,
-		query.CLOCK_10,
-		query.CLOCK_11,
-		query.CLOCK_12,
-		query.CLOCK_13,
-		query.CLOCK_14,
-		query.CLOCK_15,
-		query.CLOCK_16,
-		query.CLOCK_17,
-		query.CLOCK_18,
-		query.CLOCK_19,
-		query.CLOCK_20,
-		query.CLOCK_21,
-		query.CLOCK_22,
-		query.CLOCK_23,
-		query.CLOCK_24,
-	}
 )
 
 type Handler struct {
@@ -68,36 +35,65 @@ func Message(h *Handler, update *tg.Update) {
 
 	m := update.Message
 
+	act, err := h.rds.Get(fmt.Sprint(m.Chat.ID))
+
+	if err != nil {
+		sendError(err, m, h)
+	}
+
 	switch m.Text {
+	case "/me", word.MENU_PROFILE:
+		h.Getme(m)
 	case "/start":
 		h.SingUp(m)
-	case "/me":
-		h.Getme(m)
+	case "/todo", word.TODO_ADD:
+		h.AddTodo(m)
+	case word.TODO_HISTORY:
+		// todo
+	case word.TODO_TODOS:
+		// todo
 	case word.MENU_TODO:
 		h.Todo(m)
+	case word.MENU_CHALLANGES:
+		// todo
+	case word.MENU_RECOMMENDATION:
+		// todo
+	case word.MENU_SETTINGS:
+		// todo
+	case word.TODO_NEW_CANCEL:
+		h.CancelNew(m)
+		// todo
+	case word.TODO_NEW_TITLE:
+		if act == action.EMPTY {
+			h.AddTitle(m)
+		} else {
+			Please(h, m)
+		}
 	default:
-		act, err := Action(h, fmt.Sprint(m.Chat.ID))
-		LogErr(err)
-
 		switch act {
-		case action.TODO_ADD:
-			Warning(h, m)
 		case action.TODO_NEW_TITLE:
-			if !SetTodoTitle(h, m) {
-				Warning(h, m)
-			}
+			h.SetTodoTitle(m)
 		case action.TODO_NEW_DESCRIPTION:
-			if !SetTodoDescription(h, m) {
-				Warning(h, m)
+			h.SetTodoDescription(m)
+		case action.TODO_NEW_PICTURE:
+			//h.SetTodoPhoto(m)
+		case action.TODO_NEW_FILE:
+			//h.SetTodoFile(m)
+		case action.TODO_ADD:
+			{
+				switch m.Text {
+				case word.TODO_NEW_DESCRIPTION:
+					h.AddDescription(m)
+				case word.TODO_NEW_PICTURE:
+					h.AddPhoto(m)
+				case word.TODO_NEW_FILE:
+					h.AddFile(m)
+				case word.TODO_NEW_SAVE:
+					h.AddNotification(m)
+				default:
+					Please(h, m)
+				}
 			}
-		case action.TODO_NEW_NOTIFICATION:
-			if !SetTodoNotification(h, m) {
-				Warning(h, m)
-			}
-		default:
-			delMsg := tg.NewDeleteMessage(m.Chat.ID, m.MessageID)
-			h.bot.Send(delMsg)
-
 		}
 	}
 }
@@ -114,67 +110,38 @@ func CallbackQuery(h *Handler, update *tg.Update) {
 		return
 	}
 
-	if c.Data != act && !contains(actions, act) {
+	id := uuid.New().String()
+	if act == action.TODO_NEW_NOTIFICATION {
+		h.SaveTodo(update.CallbackQuery.Message, id)
+		//t := time.Time{}
+		n := &model.Notification{
+			Base: model.Base{
+				ID: id,
+			},
+			Todo_ID:    id,
+			User_ID:    c.Message.Chat.ID,
+			Notif_date: time.Now().Add(time.Second * 5),
+		}
+		n_id, err := h.srvc.NotifService.Create(n)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else if n_id != id {
+			fmt.Printf("New id : %s,   last id : %s", n_id, id)
+		}
 
-		msg := tg.NewMessage(c.Message.Chat.ID, "Please save your last todo")
-		h.bot.Send(msg)
-		return
 	}
-
-	switch c.Data {
-
-	// MENU
-	case query.TODO_ADD:
-		h.TodoAdd(c)
-	case query.TODO_NEW_TITLE:
-		h.TodoNewTitle(c)
-	case query.TODO_NEW_DESCRIPTION:
-		if act == action.TODO_ADD {
-			h.TodoNewDescription(c)
-		} else {
-			c.Data = "Oldin todo kiriting"
-			Alert(h.bot, c)
-		}
-
-	case query.TODO_NEW_NOTIFICATION:
-		h.TodoNewNotification(c)
-	case query.TODO_NEW_SAVE:
-		if act == action.TODO_ADD {
-			SaveTodo(h, c.Message)
-		} else {
-			c.Data = "Oldin todo kiriting"
-			Alert(h.bot, c)
-		}
-	case query.TODO_NEW_CANCEL:
-		if act == action.TODO_ADD {
-			CancelNew(h, c.Message)
-		} else {
-			c.Data = "Oldin todo kiriting"
-			Alert(h.bot, c)
-		}
-	default:
-		if contains(clocks, c.Data) {
-			h.TodoSetNotification(c)
-		}
-		Alert(h.bot, c)
-	}
-
+	// todo
+	fmt.Println("hello", update.CallbackQuery.Data)
 }
 
 func Action(h *Handler, key string) (string, error) {
 
 	act, err := h.rds.Get(key)
-	fmt.Println("act", act)
+
 	if err != nil {
-		return "empty", err
+		return "", err
 	}
 	return act, nil
-}
-
-func LogErr(err error) {
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 }
 
 func contains(s []string, e string) bool {
@@ -184,4 +151,83 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func sendError(err error, m *tg.Message, h *Handler) {
+	msg := tg.NewMessage(m.Chat.ID, "Something is wrong : "+err.Error())
+	h.bot.Send(msg)
+}
+
+func Please(h *Handler, m *tg.Message) {
+	json, err := h.rds.Get("todo-" + fmt.Sprint(m.Chat.ID))
+	if err != nil {
+
+		sendError(err, m, h)
+	}
+	todo, err := convert.StringToTodo(json)
+	if err != nil {
+		fmt.Println("here")
+		sendError(err, m, h)
+	}
+	text := helper.TodoToString(todo)
+	msg := tg.NewMessage(m.Chat.ID, "Please save last todo\n"+text)
+	msg.ReplyToMessageID = m.MessageID
+
+	msg.ParseMode = "markdown"
+	h.bot.Send(msg)
+}
+
+func notif_clock(t string) time.Duration {
+	var t2 time.Duration
+	switch t {
+	case query.CLOCK_1:
+		t2 = time.Hour
+	case query.CLOCK_2:
+		t2 = time.Hour * 2
+	case query.CLOCK_3:
+		t2 = time.Hour * 3
+	case query.CLOCK_4:
+		t2 = time.Hour * 4
+	case query.CLOCK_5:
+		t2 = time.Hour * 5
+	case query.CLOCK_6:
+		t2 = time.Hour * 6
+	case query.CLOCK_7:
+		t2 = time.Hour * 7
+	case query.CLOCK_8:
+		t2 = time.Hour * 8
+	case query.CLOCK_9:
+		t2 = time.Hour * 9
+	case query.CLOCK_10:
+		t2 = time.Hour * 10
+	case query.CLOCK_11:
+		t2 = time.Hour * 11
+	case query.CLOCK_12:
+		t2 = time.Hour * 12
+	case query.CLOCK_13:
+		t2 = time.Hour * 13
+	case query.CLOCK_14:
+		t2 = time.Hour * 14
+	case query.CLOCK_15:
+		t2 = time.Hour * 15
+	case query.CLOCK_16:
+		t2 = time.Hour * 16
+	case query.CLOCK_17:
+		t2 = time.Hour * 17
+	case query.CLOCK_18:
+		t2 = time.Hour * 18
+	case query.CLOCK_19:
+		t2 = time.Hour * 19
+	case query.CLOCK_20:
+		t2 = time.Hour * 20
+	case query.CLOCK_21:
+		t2 = time.Hour * 21
+	case query.CLOCK_22:
+		t2 = time.Hour * 22
+	case query.CLOCK_23:
+		t2 = time.Hour * 23
+	case query.CLOCK_24:
+		t2 = time.Hour * 24
+	}
+	return t2
 }

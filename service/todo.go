@@ -3,7 +3,6 @@ package service
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/realtemirov/projects/tgbot/model"
 	"github.com/realtemirov/projects/tgbot/storage"
 )
@@ -21,7 +20,7 @@ func NewTodoRepository(todoRepo storage.TodoI) *todoService {
 func (t *todoService) Create(todo *model.Todo) (string, error) {
 	return t.todoRepo.Create(&model.Todo{
 		Base: model.Base{
-			ID:        uuid.New().String(),
+			ID:        todo.ID,
 			CreatedAt: time.Now(),
 			UpdatedAt: nil,
 		},

@@ -13,7 +13,6 @@ type Storege struct {
 	db *sqlx.DB
 
 	userRepo         storage.UserI
-	challengeRepo    storage.ChallengeI
 	todoRepo         storage.TodoI
 	notificationRepo storage.NotificationI
 }
@@ -51,14 +50,6 @@ func (s *Storege) User() storage.UserI {
 	}
 
 	return s.userRepo
-}
-
-func (s *Storege) Challenge() storage.ChallengeI {
-	if s.challengeRepo == nil {
-		s.challengeRepo = NewChallangeRepo(s.db)
-	}
-
-	return s.challengeRepo
 }
 
 func (s *Storege) Todo() storage.TodoI {

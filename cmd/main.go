@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	_ "github.com/lib/pq"
@@ -10,6 +11,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
 	"github.com/realtemirov/projects/tgbot/storage/redis"
+	"github.com/realtemirov/projects/tgbot/updates"
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
 
@@ -31,21 +33,12 @@ func main() {
 
 	s := service.NewService(db)
 	h := u.NewHandler(*s, rds, bot)
-	/*
-		r := gin.Default()
-
-		r.GET("/users", func(c *gin.Context) {
-			users, err := s.UserService.GetAll()
-			if err != nil {
-				fmt.Println(err.Error())
-			}
-			c.JSON(200, users)
-		})
-		r.Run(":8080")
-	*/
 
 	fmt.Println("Bot is running")
+
+	go time_checker(h)
 	for update := range updates {
+
 		if update.Message != nil {
 			u.Message(h, &update)
 		} else if update.CallbackQuery != nil {
@@ -57,12 +50,32 @@ func main() {
 			bot.Send(msg)
 		}
 	}
-
 }
 
 func check(err error) {
 	if err != nil {
 		fmt.Println(err.Error())
 		log.Fatal(err)
+	}
+}
+
+func time_checker(h *updates.Handler) {
+	for {
+		if time.Now().Minute() == 0 {
+			n, err := u.NotificationTimes(h)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			for _, v := range n {
+
+				if time.Now().Hour() == v.Notif_date.Hour() && time.Now().Minute() == v.Notif_date.Minute() && time.Now().Second() == v.Notif_date.Second() {
+					u.SendTodo(h, v.Todo_ID)
+				}
+			}
+			time.Sleep(1 * time.Second)
+
+		} else {
+			time.Sleep(59*time.Minute - time.Duration(time.Now().Minute())*time.Minute)
+		}
 	}
 }

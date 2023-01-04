@@ -41,7 +41,15 @@ func (t *todoRepo) Create(todo *model.Todo) (string, error) {
 
 }
 func (t *todoRepo) GetByID(id string) (*model.Todo, error) {
-	return nil, nil
+	q := `SELECT user_id, title, description, photo_url, file_url FROM todos WHERE id = $1`
+	todo := &model.Todo{}
+	err := t.db.QueryRow(q, id).Scan(&todo.User_ID, &todo.Title, &todo.Description, &todo.Photo_URL, &todo.File_URL)
+
+	if err != nil {
+		return nil, err
+	}
+	return todo, nil
+
 }
 func (t *todoRepo) GetAllByUserID(id int64) ([]*model.Todo, error) {
 	return nil, nil

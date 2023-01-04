@@ -35,8 +35,6 @@ func NewRedis(cnf config.Config) (*RedisCache, error) {
 
 func (r *RedisCache) Set(key string, value string) error {
 	err := r.rds.Set(r.rds.Context(), key, value, time.Duration(time.Second*expireTime))
-	fmt.Println(err.FullName())
-	fmt.Println(err.Result())
 	return err.Err()
 }
 

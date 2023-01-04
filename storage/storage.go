@@ -4,7 +4,6 @@ import "github.com/realtemirov/projects/tgbot/model"
 
 type StorageI interface {
 	User() UserI
-	Challenge() ChallengeI
 	Todo() TodoI
 	Notification() NotificationI
 }
@@ -12,19 +11,8 @@ type StorageI interface {
 type UserI interface {
 	Add(user *model.User) (int64, error)
 	Get(id int64) (*model.User, error)
-	Update(user *model.User) (*model.User, error)
-	GetAll() ([]*model.User, error)
-	AddAdmin(id int64) error
-	RemoveAdmin(id int64) error
 }
 
-type ChallengeI interface {
-	Create()
-	GetByID()
-	GetAll()
-	Update()
-	Delete()
-}
 type TodoI interface {
 	Create(todo *model.Todo) (string, error)
 	GetByID(id string) (*model.Todo, error)
@@ -39,4 +27,5 @@ type NotificationI interface {
 	Check()
 	Create(notif *model.Notification) (string, error)
 	GetByUserId(id int64) ([]*model.Notification, error)
+	GetAll() ([]*model.Notification, error)
 }
