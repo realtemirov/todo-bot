@@ -78,7 +78,7 @@ func check(err error) {
 func time_checker(h *u.Handler) {
 	for {
 		fmt.Println(time.Now())
-		if time.Now().Hour() == 18 {
+		if time.Now().Hour() == 13 {
 
 			n, err := u.NotificationTimes(h)
 			if err != nil {
