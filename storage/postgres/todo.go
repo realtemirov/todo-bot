@@ -89,7 +89,7 @@ func (t *todoRepo) AddDescription(id int64, description string) error {
 // AddNotification(id int64, deadline int64) error
 func (t *todoRepo) AddNotification(id int64, notification *time.Time) error {
 	q := `UPDATE todos SET notification = $1 WHERE user_id = $2 AND is_set = false`
-	_, err := t.db.Exec(q, notification, id)
+	_, err := t.db.Exec(q, time.Now().Add(10*time.Second), id)
 	if err != nil {
 		return err
 	}
