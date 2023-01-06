@@ -21,7 +21,7 @@ func NewTodoRepository(todoRepo storage.TodoI) *todoService {
 func (t *todoService) Create(todo *model.Todo) (string, error) {
 	return t.todoRepo.Create(
 		&model.Todo{
-			Base:         model.Base{ID: uuid.New().String(), CreatedAt: time.Now()},
+			Base:         model.Base{ID: uuid.New().String(), CreatedAt: time.Now().Add(time.Hour * 5)},
 			User_ID:      todo.User_ID,
 			Title:        todo.Title,
 			Description:  "",

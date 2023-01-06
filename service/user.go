@@ -20,7 +20,7 @@ func NewUserRepository(userRepo storage.UserI) *userService {
 func (u *userService) Add(user *model.User) (int64, error) {
 	return u.userRepo.Add(&model.User{
 		ID:        user.ID,
-		CreatedAt: time.Now().In(time.UTC),
+		CreatedAt: time.Now().Add(time.Hour * 5),
 		Action:    user.Action,
 	})
 }
