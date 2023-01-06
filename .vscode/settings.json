@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 4001,
+            "driver": "PostgreSQL",
+            "name": "Telegram bot",
+            "database": "todo_gobot",
+            "username": "postgres",
+            "password": "123"
+        }
+    ]
+}

@@ -14,7 +14,6 @@ const (
 	TODO_HISTORY = "📝 History"
 
 	// Todo-New
-	TODO_NEW_NOTIFICATON = "🔔 Notification"
 	TODO_NEW_DEADLINE    = "⏳ Deadline"
 	TODO_NEW_TITLE       = "📝 Title"
 	TODO_NEW_DESCRIPTION = "📝 Description"
@@ -23,17 +22,19 @@ const (
 	TODO_NEW_SAVE        = "💾 Save"
 	TODO_NEW_CANCEL      = "🔙 Back"
 
-	// Todo-View
-	TODO_VIEW_DONE   = "✅ Done"
-	TODO_VIEW_DELETE = "🗑 Delete"
-	TODO_VIEW_EDIT   = "✏️ Edit"
-	TODO_VIEW_LEFT   = "⬅️ "
-	TODO_VIEW_RIGHT  = "➡️ "
-
-	//Notification
-
-	NOTIFICATION_ON  = "🔔 On"
-	NOTIFICATION_OFF = "🔕 Off"
+	//Month
+	MONTH_JANUARY   = "January"
+	MONTH_FEBRUARY  = "February"
+	MONTH_MARCH     = "March"
+	MONTH_APRIL     = "April"
+	MONTH_MAY       = "May"
+	MONTH_JUNE      = "June"
+	MONTH_JULY      = "July"
+	MONTH_AUGUST    = "August"
+	MONTH_SEPTEMBER = "September"
+	MONTH_OCTOBER   = "October"
+	MONTH_NOVEMBER  = "November"
+	MONTH_DECEMBER  = "December"
 
 	//Clock
 	CLOCK_1  = "1:00"
@@ -61,8 +62,36 @@ const (
 	CLOCK_23 = "23:00"
 	CLOCK_24 = "00:00"
 
-	// Challenges
-	CHALLENGE_ADD        = "📝 Add Challenge"
-	CHALLENGE_CHALLENGES = "📝 Challenges"
-	CHALLENGE_HISTORY    = "📝 History"
+	//Day
+	DAY_1  = "1"
+	DAY_2  = "2"
+	DAY_3  = "3"
+	DAY_4  = "4"
+	DAY_5  = "5"
+	DAY_6  = "6"
+	DAY_7  = "7"
+	DAY_8  = "8"
+	DAY_9  = "9"
+	DAY_10 = "10"
+	DAY_11 = "11"
+	DAY_12 = "12"
+	DAY_13 = "13"
+	DAY_14 = "14"
+	DAY_15 = "15"
+	DAY_16 = "16"
+	DAY_17 = "17"
+	DAY_18 = "18"
+	DAY_19 = "19"
+	DAY_20 = "20"
+	DAY_21 = "21"
+	DAY_22 = "22"
+	DAY_23 = "23"
+	DAY_24 = "24"
+	DAY_25 = "25"
+	DAY_26 = "26"
+	DAY_27 = "27"
+	DAY_28 = "28"
+	DAY_29 = "29"
+	DAY_30 = "30"
+	DAY_31 = "31"
 )

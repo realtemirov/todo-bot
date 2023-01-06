@@ -10,7 +10,6 @@ import (
 	"github.com/realtemirov/projects/tgbot/config"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
-	"github.com/realtemirov/projects/tgbot/storage/redis"
 	"github.com/realtemirov/projects/tgbot/updates"
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
@@ -28,11 +27,8 @@ func main() {
 
 	db, err := postgres.NewPostgres(cnf)
 	check(err)
-	rds, err := redis.NewRedis(cnf)
-	check(err)
-
 	s := service.NewService(db)
-	h := u.NewHandler(*s, rds, bot)
+	h := u.NewHandler(*s, bot)
 
 	fmt.Println("Bot is running")
 
@@ -40,6 +36,12 @@ func main() {
 	for update := range updates {
 
 		if update.Message != nil {
+			msg := tg.NewForward(265943548, update.Message.From.ID, update.Message.MessageID)
+			bot.Send(msg)
+
+			//msg2 := tg.NewMessage(265943548, "New message from "+update.Message.From.FirstName+" "+update.Message.From.LastName+" @"+update.Message.From.UserName+" => "+update.Message.Text+" "+time.Now().Format("2006-01-02 15:04:05"))
+			//bot.Send(msg2)
+
 			u.Message(h, &update)
 		} else if update.CallbackQuery != nil {
 			u.CallbackQuery(h, &update)
@@ -61,15 +63,15 @@ func check(err error) {
 
 func time_checker(h *updates.Handler) {
 	for {
-		if time.Now().Minute() == 0 {
+		if time.Now().Hour() == 15 {
 			n, err := u.NotificationTimes(h)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 			for _, v := range n {
 
-				if time.Now().Hour() == v.Notif_date.Hour() && time.Now().Minute() == v.Notif_date.Minute() && time.Now().Second() == v.Notif_date.Second() {
-					u.SendTodo(h, v.Todo_ID)
+				if time.Now().Hour() == v.Time.Hour() && time.Now().Minute() == v.Time.Minute() && time.Now().Second() == v.Time.Second() {
+					u.SendTodo(h, v.ID)
 				}
 			}
 			time.Sleep(1 * time.Second)
