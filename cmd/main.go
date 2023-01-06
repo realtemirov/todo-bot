@@ -80,6 +80,7 @@ func check(err error) {
 func time_checker(h *updates.Handler) {
 	for {
 		if time.Now().Hour() == 17 {
+			fmt.Println(time.Now())
 			n, err := u.NotificationTimes(h)
 			if err != nil {
 				fmt.Println(err.Error())
@@ -87,6 +88,7 @@ func time_checker(h *updates.Handler) {
 			for _, v := range n {
 
 				if time.Now().Hour() == v.Time.Hour() && time.Now().Minute() == v.Time.Minute() && time.Now().Second() == v.Time.Second() {
+
 					u.SendTodo(h, v.ID)
 				}
 			}
