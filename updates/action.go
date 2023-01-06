@@ -148,7 +148,7 @@ func NotificationTimes(h *Handler) ([]*model.Notification, error) {
 
 func SendTodo(h *Handler, id string) {
 	todo, err := h.srvc.TodoService.GetByID(id)
-
+	fmt.Println("send todo", todo.User_ID, todo.Title)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

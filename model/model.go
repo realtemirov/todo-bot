@@ -36,9 +36,9 @@ type Notification struct {
 }
 
 func (t *Todo) ToString() string {
-	txt := fmt.Sprintf("<b>Title:<b> <i>%s</i> \n", t.Title)
+	txt := fmt.Sprintf("<b>Title:</b> <i>%s</i> \n", t.Title)
 	if t.Description != "" {
-		txt += fmt.Sprintf("<b>Description:<b> <i>%s</i> \n", t.Description)
+		txt += fmt.Sprintf("<b>Description:</b> <i>%s</i> \n", t.Description)
 	}
 
 	return txt
