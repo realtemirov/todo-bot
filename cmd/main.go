@@ -78,7 +78,7 @@ func check(err error) {
 func time_checker(h *u.Handler) {
 	for {
 		fmt.Println(time.Now())
-		if time.Now().Hour() == 13 {
+		if time.Now().Minute() == 0 {
 
 			n, err := u.NotificationTimes(h)
 			if err != nil {
@@ -91,7 +91,7 @@ func time_checker(h *u.Handler) {
 					u.SendTodo(h, v.ID)
 				}
 			}
-			time.Sleep(1 * time.Second)
+			time.Sleep(1 * time.Minute)
 
 		} else {
 			time.Sleep(59*time.Minute - time.Duration(time.Now().Minute())*time.Minute)
