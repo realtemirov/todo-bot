@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	_ "github.com/lib/pq"
 	"github.com/realtemirov/projects/tgbot/config"
@@ -32,6 +33,11 @@ func main() {
 
 	fmt.Println("Bot is running")
 
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello World")
+	})
+	go r.Run(":8080")
 	go time_checker(h)
 	for update := range updates {
 
