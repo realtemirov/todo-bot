@@ -12,6 +12,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
 	"github.com/realtemirov/projects/tgbot/updates"
+
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
 
@@ -34,11 +35,20 @@ func main() {
 	fmt.Println("Bot is running")
 
 	r := gin.Default()
+
 	r.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello World")
+		c.String(200, "Hello, I'm a bot")
 	})
-	go r.Run(":8080")
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	go r.Run()
+
 	go time_checker(h)
+
 	for update := range updates {
 
 		if update.Message != nil {
@@ -69,7 +79,7 @@ func check(err error) {
 
 func time_checker(h *updates.Handler) {
 	for {
-		if time.Now().Hour() == 15 {
+		if time.Now().Minute() == 0 {
 			n, err := u.NotificationTimes(h)
 			if err != nil {
 				fmt.Println(err.Error())
@@ -77,7 +87,7 @@ func time_checker(h *updates.Handler) {
 			for _, v := range n {
 
 				if time.Now().Hour() == v.Time.Hour() && time.Now().Minute() == v.Time.Minute() && time.Now().Second() == v.Time.Second() {
-					u.SendTodo(h, v.ID)
+					go u.SendTodo(h, v.ID)
 				}
 			}
 			time.Sleep(1 * time.Second)
