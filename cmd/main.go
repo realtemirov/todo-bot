@@ -44,9 +44,8 @@ func main() {
 		})
 	})
 
-	go r.Run()
-
 	go time_checker(h)
+	go r.Run()
 
 	for update := range updates {
 
@@ -79,7 +78,7 @@ func check(err error) {
 func time_checker(h *u.Handler) {
 	for {
 		fmt.Println(time.Now())
-		if time.Now().Hour() == 17 {
+		if time.Now().Hour() == 18 {
 
 			n, err := u.NotificationTimes(h)
 			if err != nil {
