@@ -87,7 +87,6 @@ func time_checker(h *u.Handler) {
 			for _, v := range n {
 
 				if time.Now().Hour() == v.Time.Hour() && time.Now().Minute() == v.Time.Minute() && time.Now().Second() == v.Time.Second() {
-
 					u.SendTodo(h, v.ID)
 				}
 			}
