@@ -11,7 +11,6 @@ import (
 	"github.com/realtemirov/projects/tgbot/config"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
-	"github.com/realtemirov/projects/tgbot/updates"
 
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
@@ -77,10 +76,11 @@ func check(err error) {
 	}
 }
 
-func time_checker(h *updates.Handler) {
+func time_checker(h *u.Handler) {
 	for {
+		fmt.Println(time.Now())
 		if time.Now().Hour() == 17 {
-			fmt.Println(time.Now())
+
 			n, err := u.NotificationTimes(h)
 			if err != nil {
 				fmt.Println(err.Error())
