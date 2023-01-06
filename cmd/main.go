@@ -79,7 +79,7 @@ func check(err error) {
 
 func time_checker(h *updates.Handler) {
 	for {
-		if time.Now().Minute() == 0 {
+		if time.Now().Hour() == 17 {
 			n, err := u.NotificationTimes(h)
 			if err != nil {
 				fmt.Println(err.Error())
