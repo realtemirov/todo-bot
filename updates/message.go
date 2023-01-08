@@ -9,6 +9,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/buttons"
 	"github.com/realtemirov/projects/tgbot/helper"
 	"github.com/realtemirov/projects/tgbot/helper/const/action"
+	"github.com/realtemirov/projects/tgbot/helper/const/word"
 	"github.com/realtemirov/projects/tgbot/model"
 )
 
@@ -48,7 +49,7 @@ func (h *Handler) SingUp(m *tg.Message) {
 	text := ""
 	if err != nil && id == 0 {
 		if strings.Contains(err.Error(), "duplicate") {
-			text = fmt.Sprintf("%s siz allaqachon ro'yxatdan o'tgansiz.", m.Chat.FirstName)
+			text = fmt.Sprintf("%s"+word.START, m.Chat.FirstName)
 		} else {
 			text = fmt.Sprintf("Error %s", err.Error())
 		}
@@ -72,11 +73,7 @@ func (h *Handler) Todo(m *tg.Message) {
 }
 
 func (h *Handler) AddTodo(m *tg.Message) {
-	text := `
-		Title - Bu taskni nomi.
-	Description - Taskni to'liq bayon qilishingiz mumkin.
-	Deadline
-	`
+	text := word.TODO
 	msg := tg.NewMessage(m.Chat.ID, text)
 	msg.ReplyMarkup = buttons.New_todo
 	msg.ReplyToMessageID = m.MessageID

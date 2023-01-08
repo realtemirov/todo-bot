@@ -14,14 +14,8 @@ type Config struct {
 	Postgres_PASS    string
 	Postgres_DBNAME  string
 	Postgres_SSLMODE string
-	Redis_HOST       string
-	Redis_PORT       string
-	Redis_PASS       string
-	Redis_DB         int
-	Redis_EXPIRE     int
 
 	TOKEN string
-	ADMIN string
 }
 
 func Load() (Config, error) {
@@ -35,14 +29,6 @@ func Load() (Config, error) {
 	conf.Postgres_PASS = cast.ToString(getOrDefault("POSTGRES_PASS", "postgres"))
 	conf.Postgres_DBNAME = cast.ToString(getOrDefault("POSTGRES_DBNAME", "postgres"))
 	conf.Postgres_SSLMODE = cast.ToString(getOrDefault("POSTGRES_SSLMODE", "disable"))
-
-	conf.Redis_HOST = cast.ToString(getOrDefault("Redis_HOST", "localhost"))
-	conf.Redis_PORT = cast.ToString(getOrDefault("Redis_PORT", "0000"))
-	conf.Redis_PASS = cast.ToString(getOrDefault("Redis_PASS", ""))
-	conf.Redis_DB = cast.ToInt(getOrDefault("Redis_DB", 0))
-	conf.Redis_EXPIRE = cast.ToInt(getOrDefault("Redis_EXPIRE", 3600))
-
-	conf.ADMIN = cast.ToString(getOrDefault("BOT_ADMIN", "123456789"))
 	conf.TOKEN = cast.ToString(getOrDefault("BOT_TOKEN", "1234567ABC:qwerty"))
 	return conf, nil
 }

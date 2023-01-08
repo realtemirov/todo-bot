@@ -1,16 +1,18 @@
 package word
 
 const (
+	START = " siz allaqachon ro'yxatdan o'tgansiz! "
+	TODO  = "Text, rasm, file jo'natishingiz mumkin"
 	// Menu
-	MENU_TODO           = "🗒 To Do"
+	MENU_TODO           = "🗒 TODO"
 	MENU_CHALLANGES     = "💪🏼 Challenges"
 	MENU_SETTINGS       = "⚙ Settings"
 	MENU_RECOMMENDATION = "🌟 Recommendation"
 	MENU_PROFILE        = "👤 Profile"
 
 	// Todo
-	TODO_ADD     = "📝 Add Task"
-	TODO_TODOS   = "📝 To DOs"
+	TODO_ADD     = "📝 Add"
+	TODO_TODOS   = "📝 List"
 	TODO_HISTORY = "📝 History"
 
 	// Todo-New
@@ -20,7 +22,8 @@ const (
 	TODO_NEW_PICTURE     = "🖼 Picture"
 	TODO_NEW_FILE        = "📁 File"
 	TODO_NEW_SAVE        = "💾 Save"
-	TODO_NEW_CANCEL      = "🔙 Back"
+	TODO_CANCEL          = "🔙 Back"
+	TODO_OK              = "✅ Ok"
 
 	//Month
 	MONTH_JANUARY   = "January"

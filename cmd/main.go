@@ -11,6 +11,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/config"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
+	"github.com/spf13/cast"
 
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
@@ -41,6 +42,42 @@ func main() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
+		})
+	})
+	r.GET("/users", func(c *gin.Context) {
+		users, err := h.GetAllUsers()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": err.Error(),
+			})
+		}
+		c.JSON(200, gin.H{
+			"users": users,
+		})
+	})
+
+	r.GET("/:id", func(c *gin.Context) {
+
+		id := c.Param("id")
+		query := c.DefaultQuery("text", "Hello, I'm a bot")
+		m, res := h.SendMessage(id, query)
+		c.JSON(200, gin.H{
+			"id":      id,
+			"text":    query,
+			"message": m,
+			"result":  res,
+		})
+	})
+	r.GET("/todos/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		t, err := h.GetAllTodos(cast.ToInt64(id))
+		if err != nil {
+			c.JSON(401, gin.H{
+				"err": err,
+			})
+		}
+		c.JSON(200, gin.H{
+			"todos": t,
 		})
 	})
 
@@ -77,7 +114,6 @@ func check(err error) {
 
 func time_checker(h *u.Handler) {
 	for {
-		fmt.Println(time.Now())
 		t := time.Now().Add(time.Hour * 5)
 		if t.Minute() == 0 {
 
@@ -88,7 +124,7 @@ func time_checker(h *u.Handler) {
 			for _, v := range n {
 
 				if t.Hour() == v.Time.Hour() && t.Minute() == v.Time.Minute() && t.Second() == v.Time.Second() {
-					u.SendTodo(h, v.ID)
+					h.SendTodo(v.ID)
 				}
 			}
 			time.Sleep(1 * time.Minute)

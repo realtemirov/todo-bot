@@ -7,6 +7,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/buttons"
 	"github.com/realtemirov/projects/tgbot/helper/const/action"
 	"github.com/realtemirov/projects/tgbot/model"
+	"github.com/spf13/cast"
 )
 
 func (h *Handler) SetTodoTitle(m *tg.Message) bool {
@@ -146,7 +147,7 @@ func NotificationTimes(h *Handler) ([]*model.Notification, error) {
 	return notifs, err
 }
 
-func SendTodo(h *Handler, id string) {
+func (h *Handler) SendTodo(id string) {
 	todo, err := h.srvc.TodoService.GetByID(id)
 	fmt.Println("send todo", todo.User_ID, todo.Title)
 	if err != nil {
@@ -157,4 +158,34 @@ func SendTodo(h *Handler, id string) {
 	msg.ParseMode = "HTML"
 	msg.ReplyMarkup = buttons.Todo
 	h.bot.Send(msg)
+}
+
+func (h *Handler) GetAllUsers() ([]*model.User, error) {
+	users, err := h.srvc.UserService.GetAll()
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	return users, nil
+}
+
+func (h *Handler) GetAllTodos(id int64) ([]*model.Todo, error) {
+	fmt.Println(id)
+	todos, err := h.srvc.TodoService.GetAll(id)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	return todos, nil
+}
+func (h *Handler) SendMessage(id string, text string) (interface{}, bool) {
+	msg := tg.NewMessage(cast.ToInt64(id), text)
+	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+	m, err := h.bot.Send(msg)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err.Error(), false
+	}
+	fmt.Println(m)
+	return m, true
 }

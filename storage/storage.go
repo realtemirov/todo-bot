@@ -14,6 +14,7 @@ type StorageI interface {
 type UserI interface {
 	Add(user *model.User) (int64, error)
 	Get(id int64) (*model.User, error)
+	GetAll() ([]*model.User, error)
 	SetAction(id int64, action string) error
 	GetAction(id int64) (string, error)
 }

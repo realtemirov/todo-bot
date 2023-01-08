@@ -42,15 +42,13 @@ func Message(h *Handler, update *tg.Update) {
 		h.Profile(m)
 	case "/start":
 		h.SingUp(m)
-	case "/todo", word.TODO_ADD:
+	case "/todo", word.MENU_TODO:
 		h.AddTodo(m)
 	case "/history", word.TODO_HISTORY:
 		// todo
 	case "/list", word.TODO_TODOS:
 		// todo
-	case "/menu", word.MENU_TODO:
-		h.Todo(m)
-	case word.TODO_NEW_CANCEL:
+	case word.TODO_CANCEL:
 		h.CancelNew(m)
 	default:
 		switch act {

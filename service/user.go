@@ -25,6 +25,10 @@ func (u *userService) Add(user *model.User) (int64, error) {
 	})
 }
 
+func (u *userService) GetAll() ([]*model.User, error) {
+	return u.userRepo.GetAll()
+}
+
 func (u *userService) GetByID(id int64) (*model.User, error) {
 	return u.userRepo.Get(id)
 }

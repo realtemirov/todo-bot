@@ -31,7 +31,7 @@ var New_todo = tg.NewReplyKeyboard(
 	),*/
 	tg.NewKeyboardButtonRow(
 		tg.NewKeyboardButton(word.TODO_NEW_SAVE),
-		tg.NewKeyboardButton(word.TODO_NEW_CANCEL),
+		tg.NewKeyboardButton(word.TODO_CANCEL),
 	),
 )
 
@@ -48,4 +48,3 @@ var Todo_view = tg.NewInlineKeyboardMarkup(
 		tg.NewInlineKeyboardButtonData("➡️ ", "view-right-task"),
 	),
 )
-	

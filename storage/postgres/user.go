@@ -70,6 +70,18 @@ func (r *userRepo) GetAction(id int64) (string, error) {
 	return action, nil
 }
 
+func (r *userRepo) GetAll() ([]*model.User, error) {
+
+	q := `SELECT id, action, created_at FROM users`
+	users := []*model.User{}
+	err := r.db.Select(&users, q)
+	if e(err) {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func e(err error) bool {
 	if err != nil {
 		log.Error(err)

@@ -53,7 +53,7 @@ func (t *todoRepo) GetByID(id string) (*model.Todo, error) {
 // Get todo by user_id  => id, title, description, photo_url, file_url
 // GetAllByUserID(id int64) ([]*model.Todo, error)
 func (t *todoRepo) GetAllByUserID(id int64) ([]*model.Todo, error) {
-	q := `SELECT id, title, description, photo_url, file_url, deadline, FROM todos WHERE user_id = $1 AND deleted_at IS NULL and is_set = true ORDER BY deadline ASC`
+	q := `SELECT id, title, description, photo_url, file_url, deadline FROM todos WHERE user_id = $1 AND deleted_at IS NULL and is_set = true`
 	todos := []*model.Todo{}
 	err := t.db.Select(&todos, q, id)
 	if err != nil {

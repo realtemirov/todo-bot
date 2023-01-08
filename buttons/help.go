@@ -86,3 +86,10 @@ var Day = tg.NewInlineKeyboardMarkup(
 		tg.NewInlineKeyboardButtonData(action.DAY_31, action.DAY_31),
 	),
 )
+
+var Ok = tg.NewReplyKeyboard(
+	tg.NewKeyboardButtonRow(
+		tg.NewKeyboardButton(word.TODO_OK),
+		tg.NewKeyboardButton(word.TODO_CANCEL),
+	),
+)
