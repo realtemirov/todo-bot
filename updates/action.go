@@ -6,64 +6,37 @@ import (
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/realtemirov/projects/tgbot/buttons"
 	"github.com/realtemirov/projects/tgbot/helper/const/action"
+	"github.com/realtemirov/projects/tgbot/helper/const/word"
 	"github.com/realtemirov/projects/tgbot/model"
 	"github.com/spf13/cast"
 )
 
-func (h *Handler) SetTodoTitle(m *tg.Message) bool {
-
-	var (
-		todo   *model.Todo
-		msg    tg.MessageConfig
-		result bool
-	)
-
-	todo = &model.Todo{
-		User_ID: m.Chat.ID,
-		Title:   m.Text,
-		Is_Set:  false,
-	}
-
-	if _, err := h.srvc.TodoService.Create(todo); err != nil {
-		fmt.Println(err.Error())
-		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
-
-	}
-	if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_ADD); err != nil {
-		fmt.Println(err.Error())
-		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
-	} else {
-		msg = tg.NewMessage(m.Chat.ID, "Set your title")
-		msg.ReplyMarkup = buttons.New_todo
-		result = true
-	}
-
-	msg.ReplyToMessageID = m.MessageID
-	h.bot.Send(msg)
-	return result
-}
-
-func (h *Handler) SetTodoDescription(m *tg.Message) bool {
+func (h *Handler) SetTodoText(m *tg.Message) bool {
 
 	var (
 		msg    tg.MessageConfig
 		result bool
 	)
+	if m.Text != "" {
+		if err := h.srvc.TodoService.AddText(m.Chat.ID, m.Text); err != nil {
+			fmt.Println(err.Error())
+			msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+			return false
+		}
+	}
+	todo, err := h.srvc.TodoService.GetNoSet(m.Chat.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+		return false
+	}
 
-	if err := h.srvc.TodoService.AddDescription(m.Chat.ID, m.Text); err != nil {
-		fmt.Println(err.Error())
-		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
-	}
-	if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_ADD); err != nil {
-		fmt.Println(err.Error())
-		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
-	} else {
-		msg = tg.NewMessage(m.Chat.ID, "Set your Description")
-		msg.ReplyMarkup = buttons.New_todo
-		result = true
-	}
+	msg = tg.NewMessage(m.Chat.ID, todo.ToString())
+	msg.ReplyMarkup = buttons.Ok
+	result = true
 
 	msg.ReplyToMessageID = m.MessageID
+	msg.ParseMode = "HTML"
 	h.bot.Send(msg)
 	return result
 }
@@ -125,7 +98,7 @@ func (h *Handler) SetTodoDescription(m *tg.Message) bool {
 // 	h.bot.Send(msg)
 // }
 
-func (h *Handler) CancelNew(m *tg.Message) {
+func (h *Handler) CancelTodo(m *tg.Message) {
 	if err := h.srvc.TodoService.DeleteSetIsFalse(m.Chat.ID); err != nil {
 		fmt.Println(err.Error())
 	}
@@ -133,7 +106,7 @@ func (h *Handler) CancelNew(m *tg.Message) {
 		fmt.Println(err.Error())
 	}
 
-	msg := tg.NewMessage(m.Chat.ID, "Your task is canceled")
+	msg := tg.NewMessage(m.Chat.ID, word.CANCEL)
 	msg.ReplyToMessageID = m.MessageID
 	msg.ReplyMarkup = buttons.Menu
 	h.bot.Send(msg)
@@ -149,35 +122,17 @@ func NotificationTimes(h *Handler) ([]*model.Notification, error) {
 
 func (h *Handler) SendTodo(id string) {
 	todo, err := h.srvc.TodoService.GetByID(id)
-	fmt.Println("send todo", todo.User_ID, todo.Title)
+	fmt.Println("send todo", todo.User_ID, todo.Text)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
 	msg := tg.NewMessage(todo.User_ID, todo.ToString())
 	msg.ParseMode = "HTML"
-	msg.ReplyMarkup = buttons.Todo
+	msg.ReplyMarkup = buttons.Menu
 	h.bot.Send(msg)
 }
 
-func (h *Handler) GetAllUsers() ([]*model.User, error) {
-	users, err := h.srvc.UserService.GetAll()
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, err
-	}
-	return users, nil
-}
-
-func (h *Handler) GetAllTodos(id int64) ([]*model.Todo, error) {
-	fmt.Println(id)
-	todos, err := h.srvc.TodoService.GetAll(id)
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, err
-	}
-	return todos, nil
-}
 func (h *Handler) SendMessage(id string, text string) (interface{}, bool) {
 	msg := tg.NewMessage(cast.ToInt64(id), text)
 	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
@@ -188,4 +143,8 @@ func (h *Handler) SendMessage(id string, text string) (interface{}, bool) {
 	}
 	fmt.Println(m)
 	return m, true
+}
+
+func (h *Handler) Ok(id int64) error {
+	return h.srvc.UserService.SetAction(id, action.TODO_ADD)
 }

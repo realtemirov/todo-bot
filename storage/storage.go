@@ -22,21 +22,19 @@ type UserI interface {
 type TodoI interface {
 	Create(todo *model.Todo) (string, error)
 	GetByID(id string) (*model.Todo, error)
-	GetAllByUserID(id int64) ([]*model.Todo, error)
+	GetAllByUserID(id int64, done bool) ([]*model.Todo, error)
 	GetAllNotificationTimes() ([]*model.Notification, error)
 
-	//GetNoSet(id int64) (*model.Todo, error)
-	AddDescription(id int64, description string) error
-	AddNotification(id int64, deadline *time.Time) error
+	GetNoSet(id int64) (*model.Todo, error)
+	AddText(id int64, text string) error
 	AddPhotoURL(id int64, photoURL string) error
 	AddFileURL(id int64, fileURL string) error
 
-	AddSetMonthToDeadLine(id int64, month *time.Time) error
-	AddSetDayToDeadLine(id int64, day *time.Time) error
-	AddSetHourToDeadLine(id int64, hour *time.Time) error
+	AddTime(id int64, date *time.Time) error
+	AddHour(id int64, hour *time.Duration, column string) (*model.Todo, error)
 
 	SetIsSet(id int64) error
-	Done(id string) error
+	Done(id string, done bool) error
 	DeleteByID(id string) error
 	DeleteSetIsFalse(id int64) error
 }

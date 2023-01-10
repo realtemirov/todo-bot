@@ -1,8 +1,10 @@
 package word
 
 const (
-	START = " siz allaqachon ro'yxatdan o'tgansiz! "
-	TODO  = "Text, rasm, file jo'natishingiz mumkin"
+	START  = " siz allaqachon ro'yxatdan o'tgansiz! "
+	TODO   = "Text, rasm, file jo'natishingiz mumkin"
+	CANCEL = "Your todos is clear"
+
 	// Menu
 	MENU_TODO           = "🗒 TODO"
 	MENU_CHALLANGES     = "💪🏼 Challenges"
@@ -16,7 +18,9 @@ const (
 	TODO_HISTORY = "📝 History"
 
 	// Todo-New
-	TODO_NEW_DEADLINE    = "⏳ Deadline"
+	TODO_NEW_DEADLINE     = "📅 Deadline"
+	TODO_NEW_NOTIFICATION = "🔔 Notification"
+
 	TODO_NEW_TITLE       = "📝 Title"
 	TODO_NEW_DESCRIPTION = "📝 Description"
 	TODO_NEW_PICTURE     = "🖼 Picture"
@@ -26,18 +30,18 @@ const (
 	TODO_OK              = "✅ Ok"
 
 	//Month
-	MONTH_JANUARY   = "January"
-	MONTH_FEBRUARY  = "February"
-	MONTH_MARCH     = "March"
-	MONTH_APRIL     = "April"
-	MONTH_MAY       = "May"
-	MONTH_JUNE      = "June"
-	MONTH_JULY      = "July"
-	MONTH_AUGUST    = "August"
-	MONTH_SEPTEMBER = "September"
-	MONTH_OCTOBER   = "October"
-	MONTH_NOVEMBER  = "November"
-	MONTH_DECEMBER  = "December"
+	MONTH_1  = "January"
+	MONTH_2  = "February"
+	MONTH_3  = "March"
+	MONTH_4  = "April"
+	MONTH_5  = "May"
+	MONTH_6  = "June"
+	MONTH_7  = "July"
+	MONTH_8  = "August"
+	MONTH_9  = "September"
+	MONTH_10 = "October"
+	MONTH_11 = "November"
+	MONTH_12 = "December"
 
 	//Clock
 	CLOCK_1  = "1:00"
@@ -98,3 +102,18 @@ const (
 	DAY_30 = "30"
 	DAY_31 = "31"
 )
+
+func Number() map[string]string {
+	m := make(map[string]string)
+	m["1"] = "1"
+	m["2"] = "2"
+	m["3"] = "3"
+	m["4"] = "4"
+	m["5"] = "5"
+	m["6"] = "6"
+	m["7"] = "7"
+	m["8"] = "8"
+	m["left"] = "⬅"
+	m["right"] = "➡"
+	return m
+}

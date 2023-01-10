@@ -5,8 +5,8 @@ import (
 	"time"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/realtemirov/projects/tgbot/helper/const/action"
 	"github.com/realtemirov/projects/tgbot/model"
+	"github.com/spf13/cast"
 )
 
 func ContainsStrings(s []string, e string) bool {
@@ -20,56 +20,7 @@ func ContainsStrings(s []string, e string) bool {
 
 func Clock_Hour(t string) time.Duration {
 	var t2 time.Duration
-	switch t {
-	case action.CLOCK_1:
-		t2 = time.Hour
-	case action.CLOCK_2:
-		t2 = time.Hour * 2
-	case action.CLOCK_3:
-		t2 = time.Hour * 3
-	case action.CLOCK_4:
-		t2 = time.Hour * 4
-	case action.CLOCK_5:
-		t2 = time.Hour * 5
-	case action.CLOCK_6:
-		t2 = time.Hour * 6
-	case action.CLOCK_7:
-		t2 = time.Hour * 7
-	case action.CLOCK_8:
-		t2 = time.Hour * 8
-	case action.CLOCK_9:
-		t2 = time.Hour * 9
-	case action.CLOCK_10:
-		t2 = time.Hour * 10
-	case action.CLOCK_11:
-		t2 = time.Hour * 11
-	case action.CLOCK_12:
-		t2 = time.Hour * 12
-	case action.CLOCK_13:
-		t2 = time.Hour * 13
-	case action.CLOCK_14:
-		t2 = time.Hour * 14
-	case action.CLOCK_15:
-		t2 = time.Hour * 15
-	case action.CLOCK_16:
-		t2 = time.Hour * 16
-	case action.CLOCK_17:
-		t2 = time.Hour * 17
-	case action.CLOCK_18:
-		t2 = time.Hour * 18
-	case action.CLOCK_19:
-		t2 = time.Hour * 19
-	case action.CLOCK_20:
-		t2 = time.Hour * 20
-	case action.CLOCK_21:
-		t2 = time.Hour * 21
-	case action.CLOCK_22:
-		t2 = time.Hour * 22
-	case action.CLOCK_23:
-		t2 = time.Hour * 23
-	case action.CLOCK_24:
-		t2 = time.Hour * 24
-	}
+	t2 = time.Hour * time.Duration(cast.ToInt(t))
 	return t2
 }
 
@@ -84,4 +35,94 @@ func UserToString(user *tg.User, user2 *model.User) string {
 
 	text += fmt.Sprintf("<b>⏳ Created at: <code>%s</code></b>\n", user2.CreatedAt.Format("01 January 2006 15:04:05"))
 	return text
+}
+
+func SliceToInlineKeyboard(todos []*model.Todo, action string) tg.InlineKeyboardMarkup {
+
+	buttons := tg.NewInlineKeyboardMarkup()
+	count := 0
+	for {
+		if len(todos)-count >= 8 {
+			buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+4), "id!"+todos[count+3].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+5), "id!"+todos[count+4].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+6), "id!"+todos[count+5].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+7), "id!"+todos[count+6].ID+"!"+action),
+				tg.NewInlineKeyboardButtonData(cast.ToString(count+8), "id!"+todos[count+7].ID+"!"+action),
+			))
+			count += 8
+		} else {
+			switch len(todos) - count {
+			case 1:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+					))
+				}
+			case 2:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+					))
+				}
+			case 3:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+					))
+				}
+			case 4:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+4), "id!"+todos[count+3].ID+"!"+action),
+					))
+				}
+			case 5:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+4), "id!"+todos[count+3].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+5), "id!"+todos[count+4].ID+"!"+action),
+					))
+				}
+			case 6:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+4), "id!"+todos[count+3].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+5), "id!"+todos[count+4].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+6), "id!"+todos[count+5].ID+"!"+action),
+					))
+				}
+			case 7:
+				{
+					buttons.InlineKeyboard = append(buttons.InlineKeyboard, tg.NewInlineKeyboardRow(
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+1), "id!"+todos[count].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+2), "id!"+todos[count+1].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+3), "id!"+todos[count+2].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+4), "id!"+todos[count+3].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+5), "id!"+todos[count+4].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+6), "id!"+todos[count+5].ID+"!"+action),
+						tg.NewInlineKeyboardButtonData(cast.ToString(count+7), "id!"+todos[count+6].ID+"!"+action),
+					))
+				}
+			}
+			break
+		}
+	}
+
+	return buttons
 }

@@ -23,8 +23,7 @@ func (t *todoService) Create(todo *model.Todo) (string, error) {
 		&model.Todo{
 			Base:         model.Base{ID: uuid.New().String(), CreatedAt: time.Now().Add(time.Hour * 5)},
 			User_ID:      todo.User_ID,
-			Title:        todo.Title,
-			Description:  "",
+			Text:         todo.Text,
 			Photo_URL:    "",
 			File_URL:     "",
 			Deadline:     &time.Time{},
@@ -38,20 +37,20 @@ func (t *todoService) GetByID(id string) (*model.Todo, error) {
 	return t.todoRepo.GetByID(id)
 }
 
-func (t *todoService) GetAll(id int64) ([]*model.Todo, error) {
-	return t.todoRepo.GetAllByUserID(id)
+func (t *todoService) GetAllByUserID(id int64, done bool) ([]*model.Todo, error) {
+	return t.todoRepo.GetAllByUserID(id, done)
 }
 
 func (t *todoService) GetAllNotificationTimes() ([]*model.Notification, error) {
 	return t.todoRepo.GetAllNotificationTimes()
 }
 
-func (t *todoService) AddDescription(id int64, description string) error {
-	return t.todoRepo.AddDescription(id, description)
+func (t *todoService) GetNoSet(id int64) (*model.Todo, error) {
+	return t.todoRepo.GetNoSet(id)
 }
 
-func (t *todoService) AddNotification(id int64, deadline *time.Time) error {
-	return t.todoRepo.AddNotification(id, deadline)
+func (t *todoService) AddText(id int64, text string) error {
+	return t.todoRepo.AddText(id, text)
 }
 
 func (t *todoService) AddPhotoURL(id int64, photoURL string) error {
@@ -62,24 +61,20 @@ func (t *todoService) AddFileURL(id int64, fileURL string) error {
 	return t.todoRepo.AddFileURL(id, fileURL)
 }
 
-func (t *todoService) AddSetMonthToDeadLine(id int64, month *time.Time) error {
-	return t.todoRepo.AddSetMonthToDeadLine(id, month)
+func (t *todoService) AddTime(id int64, date *time.Time) error {
+	return t.todoRepo.AddTime(id, date)
 }
 
-func (t *todoService) AddSetDayToDeadLine(id int64, day *time.Time) error {
-	return t.todoRepo.AddSetDayToDeadLine(id, day)
-}
-
-func (t *todoService) AddSetHourToDeadLine(id int64, hour *time.Time) error {
-	return t.todoRepo.AddSetHourToDeadLine(id, hour)
+func (t *todoService) AddHour(id int64, hour *time.Duration, column string) (*model.Todo, error) {
+	return t.todoRepo.AddHour(id, hour, column)
 }
 
 func (t *todoService) SetIsSet(id int64) error {
 	return t.todoRepo.SetIsSet(id)
 }
 
-func (t *todoService) Done(id string) error {
-	return t.todoRepo.Done(id)
+func (t *todoService) Done(id string, done bool) error {
+	return t.todoRepo.Done(id, done)
 }
 
 func (t *todoService) DeleteByID(id string) error {

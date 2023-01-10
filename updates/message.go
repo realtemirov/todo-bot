@@ -11,6 +11,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/helper/const/action"
 	"github.com/realtemirov/projects/tgbot/helper/const/word"
 	"github.com/realtemirov/projects/tgbot/model"
+	"github.com/spf13/cast"
 )
 
 func (h *Handler) Profile(m *tg.Message) {
@@ -27,7 +28,7 @@ func (h *Handler) Profile(m *tg.Message) {
 
 	photos, err := h.bot.GetUserProfilePhotos(cnf)
 	if err == nil && photos.TotalCount != 0 {
-		p := tg.NewPhoto(user.ID, tg.FileID(photos.Photos[0][0].FileID))
+		p := tg.NewPhoto(user.ID, tg.FileID(photos.Photos[0][2].FileID))
 		p.Caption = helper.UserToString(m.From, user)
 		p.ParseMode = "HTML"
 		h.bot.Send(p)
@@ -36,7 +37,6 @@ func (h *Handler) Profile(m *tg.Message) {
 		msg.ParseMode = "HTML"
 		h.bot.Send(msg)
 	}
-
 }
 
 func (h *Handler) SingUp(m *tg.Message) {
@@ -65,65 +65,101 @@ func (h *Handler) SingUp(m *tg.Message) {
 	h.bot.Send(msg)
 }
 
-func (h *Handler) Todo(m *tg.Message) {
-	msg := tg.NewMessage(m.Chat.ID, "Keyingi buyruqni tanlang: ")
-	msg.ReplyToMessageID = m.MessageID
-	msg.ReplyMarkup = buttons.Todo
-	h.bot.Send(msg)
-}
-
 func (h *Handler) AddTodo(m *tg.Message) {
+
 	text := word.TODO
 	msg := tg.NewMessage(m.Chat.ID, text)
-	msg.ReplyMarkup = buttons.New_todo
-	msg.ReplyToMessageID = m.MessageID
-	h.bot.Send(msg)
-}
-
-func (h *Handler) AddTitle(m *tg.Message) {
-
 	if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_TITLE); err != nil {
-		fmt.Println(err.Error() + " in addtitle")
+		fmt.Println("Err : " + err.Error())
 	}
-	msg := tg.NewMessage(m.Chat.ID, "Titleni kiriting : ")
+	_, err := h.srvc.TodoService.Create(&model.Todo{
+		User_ID: m.Chat.ID,
+	})
+	if err != nil {
+		fmt.Println("Err : " + err.Error())
+	}
+
 	msg.ReplyToMessageID = m.MessageID
 	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
 	h.bot.Send(msg)
 }
 
-func (h *Handler) AddDescription(m *tg.Message) {
+// func (h *Handler) AddNotification(m *tg.Message) {
 
-	if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_DESCRIPTION); err != nil {
-		fmt.Println(err.Error() + " in adddescription")
-	}
-	msg := tg.NewMessage(m.Chat.ID, "Description kiriting : ")
+//		h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_NOTIFICATION)
+//		msg := tg.NewMessage(m.Chat.ID, "Vaqtni tanlang : ")
+//		msg.ReplyToMessageID = m.MessageID
+//		msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+//		msg.ReplyMarkup = buttons.Hour(ssssssssssssssssssssss)
+//		h.bot.Send(msg)
+//	}
+func (h *Handler) DeadlineOrNotification(m *tg.Message) {
+	h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_TIME)
+	msg := tg.NewMessage(m.Chat.ID, "Deadline Or Notification : ")
 	msg.ReplyToMessageID = m.MessageID
 	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = buttons.DeadlineOrNotification
 	h.bot.Send(msg)
 }
+func (h *Handler) GetAllTodosByUserID(m *tg.Message, done bool, action string) bool {
+	id := m.Chat.ID
+	todos, err := h.srvc.TodoService.GetAllByUserID(id, done)
+	fmt.Println("Error in GetAllTodosByUserID", todos, id)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	if len(todos) == 0 {
+		return false
+	}
 
-// func (h *Handler) AddPhoto(m *tg.Message) {
+	keyboard := helper.SliceToInlineKeyboard(todos, action)
 
-// 	h.rds.Set(fmt.Sprint(m.Chat.ID), action.TODO_NEW_PICTURE)
-// 	msg := tg.NewMessage(m.Chat.ID, "Send Photo : ")
-// 	msg.ReplyToMessageID = m.MessageID
-// 	h.bot.Send(msg)
-// }
+	text := ""
+	for i, v := range todos {
+		text += cast.ToString(i+1) + ". " + v.ToString()
+	}
+	msg := tg.NewMessage(id, text)
+	msg.ReplyMarkup = keyboard
 
-// func (h *Handler) AddFile(m *tg.Message) {
+	msg.ParseMode = "HTML"
+	_, err = h.bot.Send(msg)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return true
+}
 
-// 	h.rds.Set(fmt.Sprint(m.Chat.ID), action.TODO_NEW_FILE)
-// 	msg := tg.NewMessage(m.Chat.ID, "Send File : ")
-// 	msg.ReplyToMessageID = m.MessageID
-// 	h.bot.Send(msg)
-// }
+func (h *Handler) TodoView(id, action string, m *tg.Message) bool {
 
-func (h *Handler) AddNotification(m *tg.Message) {
+	todo, err := h.srvc.TodoService.GetByID(id)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
 
-	h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_NOTIFICATION)
-	msg := tg.NewMessage(m.Chat.ID, "Vaqtni tanlang : ")
-	msg.ReplyToMessageID = m.MessageID
+	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
+
 	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
-	msg.ReplyMarkup = buttons.Clock
+	msg.ReplyMarkup = buttons.Todo_view(id, action)
+	msg.ParseMode = "HTML"
 	h.bot.Send(msg)
+	return true
+}
+
+func (h *Handler) TodoDone(id, action string, m *tg.Message) bool {
+
+	todo, err := h.srvc.TodoService.GetByID(id)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
+
+	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = buttons.Todo_Done(id, action)
+	msg.ParseMode = "HTML"
+	h.bot.Send(msg)
+	return true
 }
