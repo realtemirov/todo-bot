@@ -77,7 +77,7 @@ func (t *todoRepo) GetAllByUserID(id int64, done bool) ([]*model.Todo, error) {
 }
 
 func (t *todoRepo) GetAllNotificationTimes() ([]*model.Notification, error) {
-	q := `SELECT id, notification FROM todos WHERE deleted_at IS NULL AND is_set = true`
+	q := `SELECT id, notification FROM todos WHERE deleted_at IS NULL AND is_set = true AND is_done = false AND EXTRACT(YEAR FROM deadline) =1`
 	todos := []*model.Notification{}
 
 	err := t.db.Select(&todos, q)

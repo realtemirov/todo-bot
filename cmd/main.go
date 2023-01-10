@@ -55,7 +55,6 @@ func main() {
 			"users": users,
 		})
 	})
-
 	r.GET("/:id", func(c *gin.Context) {
 
 		id := c.Param("id")
@@ -80,7 +79,17 @@ func main() {
 			"todos": t,
 		})
 	})
-
+	r.GET("/times", func(c *gin.Context) {
+		times, err := h.GetAllNotificationTimes()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": err.Error(),
+			})
+		}
+		c.JSON(200, gin.H{
+			"times": times,
+		})
+	})
 	go time_checker(h)
 	go r.Run()
 
@@ -95,12 +104,10 @@ func main() {
 
 			u.Message(h, &update)
 		} else if update.CallbackQuery != nil {
-			u.CallbackQuery(h, &update)
-		} else if update.EditedMessage != nil {
-			fmt.Println("Edited message")
-		} else {
-			msg := tg.NewMessage(update.Message.Chat.ID, "I don't know what to do")
+			msg := tg.NewMessage(265943548, update.CallbackQuery.Data)
 			bot.Send(msg)
+
+			u.CallbackQuery(h, &update)
 		}
 	}
 }

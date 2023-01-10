@@ -24,3 +24,12 @@ func (h *Handler) GetAllTodos(id int64) ([]*model.Todo, error) {
 	}
 	return todos, nil
 }
+
+func (h *Handler) GetAllNotificationTimes() ([]*model.Notification, error) {
+	times, err := h.srvc.TodoService.GetAllNotificationTimes()
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	return times, nil
+}
