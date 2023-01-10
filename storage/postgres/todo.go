@@ -123,8 +123,16 @@ func (t *todoRepo) AddText(id int64, text string) error {
 // Add photo url to todo which is not set
 // AddPhotoURL(id int64, photoURL string) error
 func (t *todoRepo) AddPhotoURL(id int64, url string) error {
-	q := `UPDATE todos SET photo_url = $1 WHERE user_id = $2 AND is_set = false`
-	_, err := t.db.Exec(q, url, id)
+	var urls string
+	q := `SELECT photo_url FROM todos WHERE user_id=$1 AND is_set = false`
+	err := t.db.QueryRow(q,  id).Scan(&urls)
+	if err != nil {
+		return err
+	}
+	urls += url + "!"
+
+	q = `UPDATE todos SET photo_url = $1 WHERE user_id = $2 AND is_set = false`
+	_, err = t.db.Exec(q, urls, id)
 	if err != nil {
 		return err
 	}
@@ -191,7 +199,6 @@ func (t *todoRepo) AddHour(id int64, hour *time.Duration, column string) (*model
 		q = `SELECT notification FROM todos WHERE user_id = $1 AND is_set = false`
 	}
 
-	
 	deadline = deadline.Add(*hour)
 	if column == "deadline" {
 
@@ -199,7 +206,7 @@ func (t *todoRepo) AddHour(id int64, hour *time.Duration, column string) (*model
 		q = `UPDATE todos SET notification = $1 WHERE user_id = $2 AND is_set = false`
 	}
 	q += ` RETURNING id, user_id, text, photo_url, file_url, deadline,is_set,notification,is_done`
-	
+
 	row := t.db.QueryRow(q, deadline, id)
 	todo := &model.Todo{}
 	err := row.Scan(&todo.ID, &todo.User_ID, &todo.Text, &todo.Photo_URL, &todo.File_URL, &todo.Deadline, &todo.Is_Set, &todo.Notification, &todo.Is_Done)

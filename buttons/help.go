@@ -115,7 +115,7 @@ func Day(num int) tg.InlineKeyboardMarkup {
 
 var Ok = tg.NewReplyKeyboard(
 	tg.NewKeyboardButtonRow(
-		tg.NewKeyboardButton(word.TODO_OK),
+		tg.NewKeyboardButton(word.TODO_NEW_SAVE),
 		tg.NewKeyboardButton(word.TODO_CANCEL),
 	),
 )

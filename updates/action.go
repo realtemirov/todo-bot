@@ -2,6 +2,7 @@ package updates
 
 import (
 	"fmt"
+	"strings"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/realtemirov/projects/tgbot/buttons"
@@ -17,18 +18,76 @@ func (h *Handler) SetTodoText(m *tg.Message) bool {
 		msg    tg.MessageConfig
 		result bool
 	)
-	if m.Text != "" {
-		if err := h.srvc.TodoService.AddText(m.Chat.ID, m.Text); err != nil {
-			fmt.Println(err.Error())
-			msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
-			return false
-		}
-	}
+
 	todo, err := h.srvc.TodoService.GetNoSet(m.Chat.ID)
 	if err != nil {
 		fmt.Println(err.Error())
 		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+		h.bot.Send(msg)
 		return false
+	}
+
+	if m.Caption != "" {
+		m.Text = m.Caption
+	}
+	if m.Text != "" {
+
+		if err := h.srvc.TodoService.AddText(m.Chat.ID, m.Text); err != nil {
+			fmt.Println(err.Error())
+			msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+			h.bot.Send(msg)
+			return false
+		}
+	}
+
+	//print photo
+	// fmt.Println(m.Photo)
+
+	if len(m.Photo) != 0 {
+		if todo.Photo_URL != "" {
+			msg = tg.NewMessage(m.Chat.ID, "have pictures")
+			h.bot.Send(msg)
+			return false
+		}
+		urls := m.Photo[len(m.Photo)-1].FileID
+		if err := h.srvc.TodoService.AddPhotoURL(m.Chat.ID, urls); err != nil {
+			fmt.Println(err.Error())
+			msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+			h.bot.Send(msg)
+			return false
+		}
+	}
+	todo, err = h.srvc.TodoService.GetNoSet(m.Chat.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		msg = tg.NewMessage(m.Chat.ID, "Please retry, something is wrong")
+		h.bot.Send(msg)
+		return false
+	}
+	fmt.Println("ss", todo.Photo_URL, "ss")
+	if len(strings.Split(todo.Photo_URL, "!")) > 1 {
+
+		var medias []interface{}
+		urls := strings.Split(todo.Photo_URL, "!")
+		for i := 0; i < len(urls)-1; i++ {
+
+			r := tg.NewInputMediaPhoto(tg.FileID(urls[i]))
+			if i == 0 {
+				r.Caption = todo.ToString()
+				r.ParseMode = "HTML"
+			}
+
+			medias = append(medias, r)
+		}
+
+		phts := tg.MediaGroupConfig{
+			ChatID:           m.Chat.ID,
+			Media:            medias,
+			ReplyToMessageID: m.MessageID,
+		}
+		fmt.Println(phts.Media...)
+		h.bot.Send(phts)
+		return true
 	}
 
 	msg = tg.NewMessage(m.Chat.ID, todo.ToString())
@@ -141,15 +200,19 @@ func (h *Handler) SendTodo(id string) {
 	h.bot.Send(msg)
 }
 
-func (h *Handler) SendMessage(id string, text string) (interface{}, bool) {
+func (h *Handler) SendMessage(id string, text, parseMode string) (interface{}, bool) {
+
 	msg := tg.NewMessage(cast.ToInt64(id), text)
-	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+	fmt.Println("send message", id, text, parseMode)
+	msg.ParseMode = parseMode
+	msg.ReplyMarkup = buttons.Menu
 	m, err := h.bot.Send(msg)
+
 	if err != nil {
 		fmt.Println(err.Error())
 		return err.Error(), false
 	}
-	fmt.Println(m)
+
 	return m, true
 }
 

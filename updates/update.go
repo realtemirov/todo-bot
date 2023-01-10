@@ -59,7 +59,7 @@ func Message(h *Handler, update *tg.Update) {
 		}
 	case word.TODO_CANCEL:
 		h.CancelTodo(m)
-	case word.TODO_OK:
+	case word.TODO_NEW_SAVE:
 		h.DeadlineOrNotification(m)
 	default:
 		switch act {
@@ -165,14 +165,14 @@ func CallbackQuery(h *Handler, update *tg.Update) {
 		case "deadline":
 			{
 				// h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_DEADLINE)
-				msg := tg.NewMessage(m.Chat.ID, "Choose oy")
+				msg := tg.NewMessage(m.Chat.ID, "Choose month")
 				msg.ReplyMarkup = buttons.Month
 				h.bot.Send(msg)
 			}
 		case "notification":
 			{
 				// h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_NOTIFICATION)
-				msg := tg.NewMessage(m.Chat.ID, "Choose clock")
+				msg := tg.NewMessage(m.Chat.ID, "Choose hour")
 				msg.ReplyMarkup = buttons.Hour("notification")
 				h.bot.Send(msg)
 			}

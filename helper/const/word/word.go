@@ -1,8 +1,8 @@
 package word
 
 const (
-	START  = " siz allaqachon ro'yxatdan o'tgansiz! "
-	TODO   = "Text, rasm, file jo'natishingiz mumkin"
+	START  = " allready started"
+	TODO   = "Send me text and picture, I will save it for you and remind you when time comes"
 	CANCEL = "Your todos is clear"
 
 	// Menu
@@ -27,7 +27,6 @@ const (
 	TODO_NEW_FILE        = "📁 File"
 	TODO_NEW_SAVE        = "💾 Save"
 	TODO_CANCEL          = "🔙 Back"
-	TODO_OK              = "✅ Ok"
 
 	//Month
 	MONTH_1  = "January"

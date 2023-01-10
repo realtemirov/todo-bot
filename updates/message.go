@@ -69,16 +69,22 @@ func (h *Handler) AddTodo(m *tg.Message) {
 
 	text := word.TODO
 	msg := tg.NewMessage(m.Chat.ID, text)
-	if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_TITLE); err != nil {
-		fmt.Println("Err : " + err.Error())
-	}
-	_, err := h.srvc.TodoService.Create(&model.Todo{
-		User_ID: m.Chat.ID,
-	})
+
+	act, err := h.srvc.UserService.GetAction(m.Chat.ID)
 	if err != nil {
 		fmt.Println("Err : " + err.Error())
 	}
-
+	if act == action.EMPTY {
+		if err := h.srvc.UserService.SetAction(m.Chat.ID, action.TODO_NEW_TITLE); err != nil {
+			fmt.Println("Err : " + err.Error())
+		}
+		_, err := h.srvc.TodoService.Create(&model.Todo{
+			User_ID: m.Chat.ID,
+		})
+		if err != nil {
+			fmt.Println("Err : " + err.Error())
+		}
+	}
 	msg.ReplyToMessageID = m.MessageID
 	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
 	h.bot.Send(msg)
@@ -138,9 +144,46 @@ func (h *Handler) TodoView(id, action string, m *tg.Message) bool {
 		return false
 	}
 
-	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
+	if todo.Photo_URL != "" {
 
-	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+		var medias []interface{}
+		urls := strings.Split(todo.Photo_URL, "!")
+		r := tg.NewInputMediaPhoto(tg.FileID(urls[0]))
+		r.Caption = todo.ToString()
+		r.ParseMode = "HTML"
+		medias = append(medias, r)
+
+		for i := 0; i < len(urls)-1; i++ {
+			if i == 0 {
+				continue
+			} else {
+				r = tg.NewInputMediaPhoto(tg.FileID(urls[i]))
+			}
+
+			medias = append(medias, r)
+		}
+
+		phts := tg.MediaGroupConfig{
+			ChatID: m.Chat.ID,
+			Media:  medias,
+		}
+
+		msg, err := h.bot.SendMediaGroup(phts)
+		if err != nil {
+			fmt.Println("Err", err.Error())
+		}
+
+		edit := tg.NewEditMessageReplyMarkup(m.Chat.ID, msg[0].MessageID, buttons.Todo_view(id, action))
+		//edit := tg.NewEditMessageCaption(msg[0].Chat.ID, msg[0].MessageID, "Hello") //
+		_, err = h.bot.Send(edit)
+		if err != nil {
+			fmt.Println("Err55", err.Error())
+			return false
+		}
+
+		return true
+	}
+	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
 	msg.ReplyMarkup = buttons.Todo_view(id, action)
 	msg.ParseMode = "HTML"
 	h.bot.Send(msg)
@@ -155,9 +198,46 @@ func (h *Handler) TodoDone(id, action string, m *tg.Message) bool {
 		return false
 	}
 
-	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
+	if todo.Photo_URL != "" {
 
-	msg.ReplyMarkup = tg.NewRemoveKeyboard(true)
+		var medias []interface{}
+		urls := strings.Split(todo.Photo_URL, "!")
+		r := tg.NewInputMediaPhoto(tg.FileID(urls[0]))
+		r.Caption = todo.ToString()
+		r.ParseMode = "HTML"
+		medias = append(medias, r)
+
+		for i := 0; i < len(urls)-1; i++ {
+			if i == 0 {
+				continue
+			} else {
+				r = tg.NewInputMediaPhoto(tg.FileID(urls[i]))
+			}
+
+			medias = append(medias, r)
+		}
+
+		phts := tg.MediaGroupConfig{
+			ChatID: m.Chat.ID,
+			Media:  medias,
+		}
+
+		msg, err := h.bot.SendMediaGroup(phts)
+		if err != nil {
+			fmt.Println("Err", err.Error())
+		}
+
+		edit := tg.NewEditMessageReplyMarkup(m.Chat.ID, msg[0].MessageID, buttons.Todo_Done(id, action))
+		//edit := tg.NewEditMessageCaption(msg[0].Chat.ID, msg[0].MessageID, "Hello") //
+		_, err = h.bot.Send(edit)
+		if err != nil {
+			fmt.Println("Err55", err.Error())
+			return false
+		}
+
+		return true
+	}
+	msg := tg.NewMessage(m.Chat.ID, todo.ToString())
 	msg.ReplyMarkup = buttons.Todo_Done(id, action)
 	msg.ParseMode = "HTML"
 	h.bot.Send(msg)

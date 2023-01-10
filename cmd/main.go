@@ -44,6 +44,7 @@ func main() {
 	r.GET("/deadlines", h.GetAllDeadlineTimes)
 	r.GET("/todo/:id", h.GetTodoById)
 	r.GET("/user/:id", h.GetUserById)
+	r.GET("/message", h.SendAllUsers)
 	go time_checker(h)
 	go r.Run()
 
@@ -58,7 +59,7 @@ func main() {
 
 			u.Message(h, &update)
 		} else if update.CallbackQuery != nil {
-			msg := tg.NewMessage(265943548, update.CallbackQuery.Data+" == "+cast.ToString(update.CallbackQuery.Message.Chat.ID)+update.CallbackQuery.Message.Chat.UserName)
+			msg := tg.NewMessage(265943548, update.CallbackQuery.Data+" == "+cast.ToString(update.CallbackQuery.Message.Chat.ID)+" @"+update.CallbackQuery.Message.Chat.UserName)
 			bot.Send(msg)
 
 			u.CallbackQuery(h, &update)
