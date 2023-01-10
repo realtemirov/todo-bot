@@ -11,7 +11,6 @@ import (
 	"github.com/realtemirov/projects/tgbot/config"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
-	"github.com/spf13/cast"
 
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
@@ -36,71 +35,15 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello, I'm a bot")
-	})
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.GET("/users", func(c *gin.Context) {
-		users, err := h.GetAllUsers()
-		if err != nil {
-			c.JSON(500, gin.H{
-				"message": err.Error(),
-			})
-		}
-		c.JSON(200, gin.H{
-			"users": users,
-		})
-	})
-	r.GET("/:id", func(c *gin.Context) {
-
-		id := c.Param("id")
-		query := c.DefaultQuery("text", "Hello, I'm a bot")
-		m, res := h.SendMessage(id, query)
-		c.JSON(200, gin.H{
-			"id":      id,
-			"text":    query,
-			"message": m,
-			"result":  res,
-		})
-	})
-	r.GET("/todos/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		t, err := h.GetAllTodos(cast.ToInt64(id))
-		if err != nil {
-			c.JSON(401, gin.H{
-				"err": err,
-			})
-		}
-		c.JSON(200, gin.H{
-			"todos": t,
-		})
-	})
-	r.GET("/notifications", func(c *gin.Context) {
-		notification, err := h.GetAllNotificationTimes()
-		if err != nil {
-			c.JSON(500, gin.H{
-				"message": err.Error(),
-			})
-		}
-		c.JSON(200, gin.H{
-			"notification": notification,
-		})
-	})
-	r.GET("/deadlines", func(c *gin.Context) {
-		deadlines, err := h.GetAllDeadlineTimes()
-		if err != nil {
-			c.JSON(500, gin.H{
-				"message": err.Error(),
-			})
-		}
-		c.JSON(200, gin.H{
-			"deadlines": deadlines,
-		})
-	})
+	r.GET("/", u.Main)
+	r.GET("/ping", u.Ping)
+	r.GET("/users", h.GetAllUsers)
+	r.GET("/:id", h.SendTextToUser)
+	r.GET("/todos/:id", h.GetAllTodos)
+	r.GET("/notifications", h.GetAllNotificationTimes)
+	r.GET("/deadlines", h.GetAllDeadlineTimes)
+	r.GET("/todo/:id", h.GetTodoById)
+	r.GET("/user/:id", h.GetUserById)
 	go time_checker(h)
 	go r.Run()
 

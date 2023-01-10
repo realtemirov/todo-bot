@@ -180,14 +180,14 @@ func (t *todoRepo) AddHour(id int64, hour *time.Duration, column string) (*model
 	if column == "deadline" {
 		q = `SELECT deadline FROM todos WHERE user_id = $1 AND is_set = false`
 	} else {
-		q = `SELECT notification FROM todos WHERE user_id = $1 AND is_set = true`
+		q = `SELECT notification FROM todos WHERE user_id = $1 AND is_set = false`
 	}
 
 	err := t.db.QueryRow(q, id).Scan(&deadline)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println("deadline:", deadline)
 	deadline = deadline.Add(*hour)
 	if column == "deadline" {
 		q = `UPDATE todos SET deadline = $1 WHERE user_id = $2 AND is_set = false `
@@ -195,7 +195,7 @@ func (t *todoRepo) AddHour(id int64, hour *time.Duration, column string) (*model
 		q = `UPDATE todos SET notification = $1 WHERE user_id = $2 AND is_set = false`
 	}
 	q += ` RETURNING id, user_id, text, photo_url, file_url, deadline,is_set,notification,is_done`
-
+	fmt.Println("deadline:", deadline)
 	row := t.db.QueryRow(q, deadline, id)
 	todo := &model.Todo{}
 	err = row.Scan(&todo.ID, &todo.User_ID, &todo.Text, &todo.Photo_URL, &todo.File_URL, &todo.Deadline, &todo.Is_Set, &todo.Notification, &todo.Is_Done)
