@@ -104,7 +104,7 @@ func (h *Handler) DeadlineOrNotification(m *tg.Message) {
 func (h *Handler) GetAllTodosByUserID(m *tg.Message, done bool, action string) bool {
 	id := m.Chat.ID
 	todos, err := h.srvc.TodoService.GetAllByUserID(id, done)
-	fmt.Println("Error in GetAllTodosByUserID", todos, id)
+
 	if err != nil {
 		fmt.Println(err.Error())
 		return false

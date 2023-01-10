@@ -344,7 +344,6 @@ func CallbackQuery(h *Handler, update *tg.Update) {
 					fmt.Println(err.Error())
 					text = "Error1 : " + err.Error() + "\n"
 				}
-				fmt.Println("done")
 				err = h.srvc.TodoService.SetIsSet(m.Chat.ID)
 				if err != nil {
 					fmt.Println(err.Error())

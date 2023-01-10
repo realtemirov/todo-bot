@@ -11,6 +11,7 @@ import (
 	"github.com/realtemirov/projects/tgbot/config"
 	"github.com/realtemirov/projects/tgbot/service"
 	"github.com/realtemirov/projects/tgbot/storage/postgres"
+	"github.com/spf13/cast"
 
 	u "github.com/realtemirov/projects/tgbot/updates"
 )
@@ -39,7 +40,6 @@ func main() {
 	r.GET("/ping", u.Ping)
 	r.GET("/users", h.GetAllUsers)
 	r.GET("/:id", h.SendTextToUser)
-	r.GET("/todos/:id", h.GetAllTodos)
 	r.GET("/notifications", h.GetAllNotificationTimes)
 	r.GET("/deadlines", h.GetAllDeadlineTimes)
 	r.GET("/todo/:id", h.GetTodoById)
@@ -58,7 +58,7 @@ func main() {
 
 			u.Message(h, &update)
 		} else if update.CallbackQuery != nil {
-			msg := tg.NewMessage(265943548, update.CallbackQuery.Data)
+			msg := tg.NewMessage(265943548, update.CallbackQuery.Data+" == "+cast.ToString(update.CallbackQuery.Message.Chat.ID)+update.CallbackQuery.Message.Chat.UserName)
 			bot.Send(msg)
 
 			u.CallbackQuery(h, &update)

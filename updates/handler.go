@@ -52,18 +52,6 @@ func (h *Handler) GetAllUsers(c *gin.Context) {
 	})
 }
 
-func (h *Handler) GetAllTodos(c *gin.Context) {
-	id := c.Param("id")
-	t, err := h.srvc.TodoService.GetAllByUserID(cast.ToInt64(id), false)
-	if err != nil {
-		c.JSON(401, gin.H{
-			"err": err,
-		})
-	}
-	c.JSON(200, gin.H{
-		"todos": t,
-	})
-}
 
 func (h *Handler) GetAllNotificationTimes(c *gin.Context) {
 	notification, err := h.srvc.TodoService.GetAllNotificationTimes()

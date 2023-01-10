@@ -23,9 +23,9 @@ func NewTodoRepo(db *sqlx.DB) *todoRepo {
 func (t *todoRepo) Create(todo *model.Todo) (string, error) {
 
 	var id string
-	q := `INSERT INTO todos (id, created_at, user_id, text,  photo_url, file_url, deadline, is_set, is_done,notification)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`
-	err := t.db.QueryRow(q, todo.ID, todo.CreatedAt, todo.User_ID, todo.Text, todo.Photo_URL, todo.File_URL, todo.Deadline, todo.Is_Set, todo.Is_Done, todo.Notification).Scan(&id)
+	q := `INSERT INTO todos (id, created_at, user_id, text,  photo_url, file_url, is_set, is_done)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+	err := t.db.QueryRow(q, todo.ID, todo.CreatedAt, todo.User_ID, todo.Text, todo.Photo_URL, todo.File_URL, todo.Is_Set, todo.Is_Done).Scan(&id)
 	if err != nil {
 		return "", err
 	}
@@ -146,22 +146,25 @@ func (t *todoRepo) AddFileURL(id int64, url string) error {
 // AddTime(id int64, date *time.Time) error
 func (t *todoRepo) AddTime(id int64, date *time.Time) error {
 
-	var deadline time.Time
-	q := `SELECT deadline FROM todos WHERE user_id = $1 AND is_set = false`
-
-	err := t.db.QueryRow(q, id).Scan(&deadline)
-	if err != nil {
-		return err
-	}
+	var (
+		deadline time.Time
+		q        string
+	)
 
 	if date.Year() != 1 {
 		deadline = deadline.AddDate(date.Year()-1, int(date.Month())-1, date.Day()-1)
 	} else {
+		q = `SELECT deadline FROM todos WHERE user_id = $1 AND is_set = false`
+
+		err := t.db.QueryRow(q, id).Scan(&deadline)
+		if err != nil {
+			return err
+		}
 		deadline = deadline.AddDate(0, 0, date.Day()-1)
 	}
 
 	q = `UPDATE todos SET deadline = $1 WHERE user_id = $2 AND is_set = false`
-	_, err = t.db.Exec(q, deadline, id)
+	_, err := t.db.Exec(q, deadline, id)
 	if err != nil {
 		return err
 	}
@@ -179,26 +182,27 @@ func (t *todoRepo) AddHour(id int64, hour *time.Duration, column string) (*model
 	)
 	if column == "deadline" {
 		q = `SELECT deadline FROM todos WHERE user_id = $1 AND is_set = false`
+		err := t.db.QueryRow(q, id).Scan(&deadline)
+		if err != nil {
+			return nil, err
+		}
+		q = `UPDATE todos SET deadline = $1 WHERE user_id = $2 AND is_set = false `
 	} else {
 		q = `SELECT notification FROM todos WHERE user_id = $1 AND is_set = false`
 	}
 
-	err := t.db.QueryRow(q, id).Scan(&deadline)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("deadline:", deadline)
+	
 	deadline = deadline.Add(*hour)
 	if column == "deadline" {
-		q = `UPDATE todos SET deadline = $1 WHERE user_id = $2 AND is_set = false `
+
 	} else {
 		q = `UPDATE todos SET notification = $1 WHERE user_id = $2 AND is_set = false`
 	}
 	q += ` RETURNING id, user_id, text, photo_url, file_url, deadline,is_set,notification,is_done`
-	fmt.Println("deadline:", deadline)
+	
 	row := t.db.QueryRow(q, deadline, id)
 	todo := &model.Todo{}
-	err = row.Scan(&todo.ID, &todo.User_ID, &todo.Text, &todo.Photo_URL, &todo.File_URL, &todo.Deadline, &todo.Is_Set, &todo.Notification, &todo.Is_Done)
+	err := row.Scan(&todo.ID, &todo.User_ID, &todo.Text, &todo.Photo_URL, &todo.File_URL, &todo.Deadline, &todo.Is_Set, &todo.Notification, &todo.Is_Done)
 	if err != nil {
 		return nil, err
 	}
