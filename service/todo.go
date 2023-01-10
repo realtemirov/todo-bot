@@ -45,6 +45,10 @@ func (t *todoService) GetAllNotificationTimes() ([]*model.Notification, error) {
 	return t.todoRepo.GetAllNotificationTimes()
 }
 
+func (t *todoService) GetAllDeadlineTimes() ([]*model.Deadline, error) {
+	return t.todoRepo.GetAllDeadlineTimes()
+}
+
 func (t *todoService) GetNoSet(id int64) (*model.Todo, error) {
 	return t.todoRepo.GetNoSet(id)
 }

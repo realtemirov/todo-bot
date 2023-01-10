@@ -33,3 +33,12 @@ func (h *Handler) GetAllNotificationTimes() ([]*model.Notification, error) {
 	}
 	return times, nil
 }
+
+func (h *Handler) GetAllDeadlineTimes() ([]*model.Deadline, error) {
+	times, err := h.srvc.TodoService.GetAllDeadlineTimes()
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	return times, nil
+}

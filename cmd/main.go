@@ -79,15 +79,26 @@ func main() {
 			"todos": t,
 		})
 	})
-	r.GET("/times", func(c *gin.Context) {
-		times, err := h.GetAllNotificationTimes()
+	r.GET("/notifications", func(c *gin.Context) {
+		notification, err := h.GetAllNotificationTimes()
 		if err != nil {
 			c.JSON(500, gin.H{
 				"message": err.Error(),
 			})
 		}
 		c.JSON(200, gin.H{
-			"times": times,
+			"notification": notification,
+		})
+	})
+	r.GET("/deadlines", func(c *gin.Context) {
+		deadlines, err := h.GetAllDeadlineTimes()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": err.Error(),
+			})
+		}
+		c.JSON(200, gin.H{
+			"deadlines": deadlines,
 		})
 	})
 	go time_checker(h)
@@ -128,12 +139,25 @@ func time_checker(h *u.Handler) {
 			if err != nil {
 				fmt.Println(err.Error())
 			}
+			d, err := u.DeadlineTimes(h)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+
 			for _, v := range n {
 
 				if t.Hour() == v.Time.Hour() && t.Minute() == v.Time.Minute() && t.Second() == v.Time.Second() {
 					h.SendTodo(v.ID)
 				}
 			}
+
+			for _, v := range d {
+
+				if int(t.Month()) == int(v.Time.Month()) && t.Day() == v.Time.Day() && t.Hour() == v.Time.Hour() && t.Minute() == v.Time.Minute() && t.Second() == v.Time.Second() {
+					h.SendTodo(v.ID)
+				}
+			}
+
 			time.Sleep(1 * time.Minute)
 
 		} else {

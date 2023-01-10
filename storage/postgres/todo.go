@@ -88,6 +88,18 @@ func (t *todoRepo) GetAllNotificationTimes() ([]*model.Notification, error) {
 	return todos, nil
 }
 
+func (t *todoRepo) GetAllDeadlineTimes() ([]*model.Deadline, error) {
+	q := `SELECT id, deadline FROM todos WHERE deleted_at IS NULL AND is_set = true AND is_done = false AND EXTRACT(YEAR FROM deadline) >1`
+	todos := []*model.Deadline{}
+
+	err := t.db.Select(&todos, q)
+
+	if err != nil {
+		return nil, err
+	}
+	return todos, nil
+}
+
 // Add text to todos which is not set
 // AddText(id int64, text string)
 func (t *todoRepo) AddText(id int64, text string) error {

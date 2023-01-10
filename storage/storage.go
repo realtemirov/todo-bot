@@ -24,6 +24,7 @@ type TodoI interface {
 	GetByID(id string) (*model.Todo, error)
 	GetAllByUserID(id int64, done bool) ([]*model.Todo, error)
 	GetAllNotificationTimes() ([]*model.Notification, error)
+	GetAllDeadlineTimes() ([]*model.Deadline, error)
 
 	GetNoSet(id int64) (*model.Todo, error)
 	AddText(id int64, text string) error

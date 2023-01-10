@@ -36,6 +36,11 @@ type Notification struct {
 	ID   string     `json:"id" db:"id"`
 }
 
+type Deadline struct {
+	Time *time.Time `json:"deadline" db:"deadline"`
+	ID   string     `json:"id" db:"id"`
+}
+
 func (t *Todo) ToString() string {
 	var time time.Time
 	txt := fmt.Sprintf("<b>Text:</b>   <i>%s</i>", strings.Join(strings.Split(t.Text, "!"), "\n"))

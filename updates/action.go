@@ -120,6 +120,14 @@ func NotificationTimes(h *Handler) ([]*model.Notification, error) {
 	return notifs, err
 }
 
+func DeadlineTimes(h *Handler) ([]*model.Deadline, error) {
+	notifs, err := h.srvc.TodoService.GetAllDeadlineTimes()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return notifs, err
+}
+
 func (h *Handler) SendTodo(id string) {
 	todo, err := h.srvc.TodoService.GetByID(id)
 	fmt.Println("send todo", todo.User_ID, todo.Text)
