@@ -1,3 +1,3 @@
 # todo-bot
 
-Using Golang and Postgres
+Using Golang(Gin) and Postgres
