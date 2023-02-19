@@ -1,6 +1,6 @@
 # todo-bot
 
-Using Golang and Postgres
+Using Golang and Postgres Telegram bot example
 
  github.com/gin-gonic/gin v1.8.2
  
